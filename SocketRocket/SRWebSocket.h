@@ -55,6 +55,9 @@ extern NSString *const SRHTTPResponseErrorKey;
 @property (nonatomic, readonly) SRReadyState readyState;
 @property (nonatomic, readonly, retain) NSURL *url;
 
+// wrapping NSTimeInterval, or nil for no timeout. If closeTimeout is exceeded and no close control-frame is received, the underlying TCP connection is closed.
+@property (nonatomic) NSNumber* closeTimeout;
+
 // This returns the negotiated protocol.
 // It will be nil until after the handshake completes.
 @property (nonatomic, readonly, copy) NSString *protocol;

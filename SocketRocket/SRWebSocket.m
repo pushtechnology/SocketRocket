@@ -272,6 +272,7 @@ typedef void (^data_callback)(SRWebSocket *webSocket,  NSData *data);
 @synthesize url = _url;
 @synthesize readyState = _readyState;
 @synthesize protocol = _protocol;
+@synthesize closeTimeout = _closeTimeout;
 
 static __strong NSData *CRLFCRLF;
 
@@ -658,6 +659,17 @@ static __strong NSData *CRLFCRLF;
         
         [self _sendFrameWithOpcode:SROpCodeConnectionClose data:payload];
     });
+	
+	if(self.closeTimeout != nil) {
+		dispatch_after(
+		   dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.closeTimeout.doubleValue * NSEC_PER_SEC)),
+		   _workQueue,
+		   ^{
+			   if(self.readyState != SR_CLOSED) {
+				   [self _disconnect];
+			   }
+		   });
+	}
 }
 
 - (void)_closeWithProtocolError:(NSString *)message;
