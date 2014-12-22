@@ -659,22 +659,20 @@ static __strong NSData *CRLFCRLF;
         
         [self _sendFrameWithOpcode:SROpCodeConnectionClose data:payload];
     });
-	
-	if(self.closeTimeout != nil) {
-		__weak SRWebSocket const *weakSelf = self;
-		dispatch_after(
-		   dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.closeTimeout.doubleValue * NSEC_PER_SEC)),
-		   _workQueue,
-		   ^{
-               SRWebSocket const *strongSelf = weakSelf;
-			   if(strongSelf==nil) {
-				   return;
-			   }
-			   if(strongSelf.readyState != SR_CLOSED) {
-				   [strongSelf _disconnect];
-			   }
-		   });
-	}
+
+    if(self.closeTimeout != nil) {
+        __weak SRWebSocket const *weakSelf = self;
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.closeTimeout.doubleValue * NSEC_PER_SEC)),
+            _workQueue,
+            ^{
+                SRWebSocket const *strongSelf = weakSelf;
+                if(strongSelf != nil && strongSelf.readyState != SR_CLOSED) {
+                    [strongSelf _disconnect];
+                }
+            }
+        );
+    }
 }
 
 - (void)_closeWithProtocolError:(NSString *)message;
