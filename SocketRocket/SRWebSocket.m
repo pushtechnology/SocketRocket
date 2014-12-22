@@ -661,12 +661,17 @@ static __strong NSData *CRLFCRLF;
     });
 	
 	if(self.closeTimeout != nil) {
+		__weak SRWebSocket const *weakSelf = self;
 		dispatch_after(
 		   dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.closeTimeout.doubleValue * NSEC_PER_SEC)),
 		   _workQueue,
 		   ^{
-			   if(self.readyState != SR_CLOSED) {
-				   [self _disconnect];
+               SRWebSocket const *strongSelf = weakSelf;
+			   if(strongSelf==nil) {
+				   return;
+			   }
+			   if(strongSelf.readyState != SR_CLOSED) {
+				   [strongSelf _disconnect];
 			   }
 		   });
 	}
